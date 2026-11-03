@@ -1,4 +1,3 @@
-
 using BackEnd.Modules.Auth.Dtos;
 using BackEnd.Modules.Auth.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -10,14 +9,22 @@ public class AuthController(AuthService authService) : ControllerBase {
   private readonly AuthService _authService = authService;
 
   [HttpPost("login")]
-  public IActionResult Login(LoginRequestDto loginRequestDto) {
-    // Aquí hacemos login
-    return Ok(loginRequestDto);
+  public async Task<IActionResult> Login(LoginRequestDto loginRequestDto) {
+    var response = await _authService.LoginAsync(loginRequestDto);
+    if (response is null) {
+      return Unauthorized(new { message = "Credenciales inválidas" });
+    }
+
+    return Ok(response);
   }
 
   [HttpPost("register")]
-  public IActionResult Register(RegisterRequestDto registerRequestDto) {
-    // Aquí creamos un nuevo usuario
-    return Ok(registerRequestDto);
+  public async Task<IActionResult> Register(RegisterRequestDto registerRequestDto) {
+    try {
+      var response = await _authService.RegisterAsync(registerRequestDto);
+      return Ok(response);
+    } catch (InvalidOperationException ex) {
+      return BadRequest(new { message = ex.Message });
+    }
   }
 }

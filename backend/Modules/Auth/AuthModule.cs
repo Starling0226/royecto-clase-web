@@ -8,6 +8,7 @@ public static class AddModule {
 
     services.AddScoped<AuthService>();
     services.AddScoped<AuthRepository>();
+    services.AddScoped<JwtService>();
 
     return services;
   }
